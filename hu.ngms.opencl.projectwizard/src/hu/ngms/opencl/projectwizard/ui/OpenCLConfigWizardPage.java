@@ -103,7 +103,6 @@ public class OpenCLConfigWizardPage extends WizardPage {
 	return its;
     }
 
-    @Override
     public void createControl(Composite p) {
 	parent = new Composite(p, SWT.NONE);
 	parent.setFont(parent.getFont());
@@ -134,16 +133,13 @@ public class OpenCLConfigWizardPage extends WizardPage {
 
 	tv = new CheckboxTableViewer(table);
 	tv.setContentProvider(new IStructuredContentProvider() {
-	    @Override
 	    public Object[] getElements(Object inputElement) {
 		return (Object[]) inputElement;
 	    }
 
-	    @Override
 	    public void dispose() {
 	    }
 
-	    @Override
 	    public void inputChanged(Viewer viewer, Object oldInput,
 		    Object newInput) {
 	    }
@@ -161,7 +157,6 @@ public class OpenCLConfigWizardPage extends WizardPage {
 	    }
 	});
 	tv.addCheckStateListener(new ICheckStateListener() {
-	    @Override
 	    public void checkStateChanged(CheckStateChangedEvent event) {
 		setPageComplete(isCustomPageComplete());
 		update();
