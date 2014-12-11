@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.ui.newWizards">
+      <category
+            id="hu.ngms.opencl.projectwizard.category.wizards"
+            name="OpenCl">
+      </category>
+      <wizard
+            category="hu.ngms.opencl.projectwizard.category.wizards"
+            class="hu.ngms.opencl.projectwizard.ui.OpenCLWizard"
+            id="hu.ngms.opencl.projectwizard.OpenCLWizard"
+            name="OpenCL Project"
+            project="true">
+         <description>
+            Create a new OpenCL project
+         </description>
+      </wizard>
+   </extension>
+</plugin>
