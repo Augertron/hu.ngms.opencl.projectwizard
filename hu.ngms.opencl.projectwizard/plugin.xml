@@ -10,6 +10,7 @@
       <wizard
             category="hu.ngms.opencl.projectwizard.category.wizards"
             class="hu.ngms.opencl.projectwizard.ui.OpenCLWizard"
+            icon="resources/OpenCL_protocol_open_pgp_3d.png"
             id="hu.ngms.opencl.projectwizard.OpenCLWizard"
             name="OpenCL Project"
             project="true">

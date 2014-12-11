@@ -1,5 +1,6 @@
 package hu.ngms.opencl.projectwizard.ui;
 
+import hu.ngms.opencl.projectwizard.Activator;
 import hu.ngms.opencl.projectwizard.ui.messages.Messages;
 
 import java.net.URI;
@@ -62,9 +63,6 @@ public class OpenCLMainWizardPage extends WizardNewProjectCreationPage
 
     static final String PAGE_ID = "org.eclipse.cdt.managedbuilder.ui.wizard.NewModelProjectWizardPage"; //$NON-NLS-1$
 
-    private static final String EXTENSION_POINT_ID = "org.eclipse.cdt.ui.CDTWizard"; //$NON-NLS-1$
-    private static final String ELEMENT_NAME = "wizard"; //$NON-NLS-1$
-    private static final String CLASS_NAME = "class"; //$NON-NLS-1$
     public static final String DESC = "EntryDescriptor"; //$NON-NLS-1$ 
 
     private Tree tree;
@@ -98,6 +96,7 @@ public class OpenCLMainWizardPage extends WizardNewProjectCreationPage
 			getWizard()), getDescriptor(tree));
 
 	setPageComplete(validatePage());
+	setImageDescriptor(Activator.imageDescriptorFromPlugin(Activator.PLUGIN_ID, "resources/opencl-64.jpg"));
 	setErrorMessage(null);
 	setMessage(null);
     }

@@ -15,3 +15,4 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.cdt.managedbuilder.core;bundle-version="8.3.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
+
