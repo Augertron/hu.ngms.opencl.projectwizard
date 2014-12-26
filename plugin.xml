@@ -19,4 +19,22 @@
          </description>
       </wizard>
    </extension>
+   <extension
+         id="hu.ngms.opencl.openclnature"
+         name="OpenCLProjectNature"
+         point="org.eclipse.core.resources.natures">
+      <runtime>
+         <run
+               class="hu.ngms.opencl.projectwizard.OpenCLProjectNature">
+         </run>
+      </runtime>
+   </extension>
+   <extension
+         point="org.eclipse.ui.ide.projectNatureImages">
+      <image
+            icon="resources/OpenCL_protocol_open_pgp_3d.png"
+            id="hu.ngms.opencl.openclnature.image"
+            natureId="hu.ngms.opencl.openclnature">
+      </image>
+   </extension>
 </plugin>

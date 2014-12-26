@@ -1,5 +1,6 @@
 package hu.ngms.opencl.projectwizard.ui;
 
+import hu.ngms.opencl.projectwizard.OpenCLProjectNature;
 import hu.ngms.opencl.projectwizard.ui.messages.Messages;
 import hu.ngms.opencl.projectwizard.util.OpenCLProjectHelper;
 
@@ -24,6 +25,7 @@ import org.eclipse.cdt.ui.wizards.IWizardWithMemory;
 import org.eclipse.core.filesystem.EFS;
 import org.eclipse.core.filesystem.IFileInfo;
 import org.eclipse.core.filesystem.IFileStore;
+import org.eclipse.core.internal.resources.ProjectDescription;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IResource;
@@ -53,7 +55,7 @@ public class OpenCLWizard extends BasicNewResourceWizard implements
     protected OpenCLMainWizardPage fMainPage;
 
     protected IProject newProject;
-    
+
     private boolean existingPath = false;
     private String lastProjectName = null;
     private URI lastProjectLocation = null;
@@ -73,7 +75,7 @@ public class OpenCLWizard extends BasicNewResourceWizard implements
 	setDialogSettings(CUIPlugin.getDefault().getDialogSettings());
 	setNeedsProgressMonitor(true);
 	setForcePreviousAndNextButtons(true);
-	
+
     }
 
     protected IProject continueCreation(IProject prj) {
@@ -81,8 +83,17 @@ public class OpenCLWizard extends BasicNewResourceWizard implements
 	    continueCreationMonitor = new NullProgressMonitor();
 	}
 	try {
+	    IProjectDescription description = prj.getDescription();
+	    String[] natures = description.getNatureIds();
+	    String[] newNatures = new String[natures.length + 1];
+	    System.arraycopy(natures, 0, newNatures, 0, natures.length);
+	    newNatures[natures.length] = OpenCLProjectNature.OPENCL_NATURE_ID;
+	    description.setNatureIds(newNatures);
+	    prj.setDescription(description, null);
+	    
 	    OpenCLProjectHelper.addFoldersToProjectStructure(prj);
 	} catch (CoreException e) {
+	    e.printStackTrace();
 	} finally {
 	    continueCreationMonitor.done();
 	}
@@ -91,7 +102,8 @@ public class OpenCLWizard extends BasicNewResourceWizard implements
 
     @Override
     public void addPages() {
-	fMainPage = new OpenCLMainWizardPage(Messages.OpenCLProjectWizard_project);
+	fMainPage = new OpenCLMainWizardPage(
+		Messages.OpenCLProjectWizard_project);
 	fMainPage.setTitle(Messages.OpenCLProjectWizard_name);
 	fMainPage.setDescription(Messages.OpenCLProjectWizard_description);
 	addPage(fMainPage);
@@ -137,10 +149,12 @@ public class OpenCLWizard extends BasicNewResourceWizard implements
 		    fs = EFS.getStore(p);
 		IFileInfo f = fs.fetchInfo();
 		if (f.exists() && f.isDirectory()) {
-		    if (fs.getChild(".project").fetchInfo().exists()) { 
-			if (!MessageDialog.openConfirm(getShell(), Messages.OpenCLProjectWizard_overrideOldProject, //$NON-NLS-1$
-				Messages.OpenCLProjectWizard_existingSettingsOverriden) 
-			)
+		    if (fs.getChild(".project").fetchInfo().exists()) {
+			if (!MessageDialog
+				.openConfirm(
+					getShell(),
+					Messages.OpenCLProjectWizard_overrideOldProject, //$NON-NLS-1$
+					Messages.OpenCLProjectWizard_existingSettingsOverriden))
 			    return null;
 		    }
 		    existingPath = true;
@@ -258,7 +272,8 @@ public class OpenCLWizard extends BasicNewResourceWizard implements
 					    fMonitor = monitor;
 					}
 					fMonitor.beginTask(
-						Messages.OpenCLProjectWizard_opDescription, 100); 
+						Messages.OpenCLProjectWizard_opDescription,
+						100);
 					fMonitor.worked(10);
 					try {
 					    newProject = createIProject(
@@ -323,8 +338,7 @@ public class OpenCLWizard extends BasicNewResourceWizard implements
     public IProject createIProject(final String name, final URI location,
 	    IProgressMonitor monitor) throws CoreException {
 
-	monitor.beginTask(
-		Messages.OpenCLProjectWizard_creatingProject, 100); 
+	monitor.beginTask(Messages.OpenCLProjectWizard_creatingProject, 100);
 
 	if (newProject != null)
 	    return newProject;
