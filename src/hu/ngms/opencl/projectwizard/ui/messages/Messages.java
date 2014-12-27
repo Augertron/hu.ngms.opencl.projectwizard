@@ -34,6 +34,10 @@ public class Messages extends NLS {
     public static String OpenCLConfigWizard_advanced;
 
     public static String OpenCLMainWizardPage_error0;
+    
+    public static String OpenCLKernelWizard_message;
+    public static String OpenCLKernelWizard_title;
+    public static String OpenCLKernelWizard_description;
 
     static {
 	NLS.initializeMessages(Messages.class.getName(), Messages.class);

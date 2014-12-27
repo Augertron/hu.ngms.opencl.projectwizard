@@ -18,6 +18,14 @@
             Create a new OpenCL project
          </description>
       </wizard>
+      <wizard
+            category="hu.ngms.opencl.projectwizard.category.wizards"
+            class="hu.ngms.opencl.projectwizard.ui.OpenCLKernelWizard"
+            icon="resources/OpenCL_protocol_open_pgp_3d.png"
+            id="hu.ngms.opencl.projectwizard.kernelWizard"
+            name="OpenCL Kernel"
+            project="false">
+      </wizard>
    </extension>
    <extension
          id="hu.ngms.opencl.openclnature"
@@ -36,5 +44,32 @@
             id="hu.ngms.opencl.openclnature.image"
             natureId="hu.ngms.opencl.openclnature">
       </image>
+   </extension>
+   <extension
+         id="hu.ngms.opencl.projectwizard.menu"
+         point="org.eclipse.ui.menus">
+      <menuContribution
+            allPopups="true"
+            locationURI="popup:common.new.menu?after=additions">
+         <command
+               commandId="org.eclipse.ui.newWizard"
+               label="OpenCL kernel"
+               style="push">
+            <visibleWhen
+                  checkEnabled="true">
+                <with variable="selection">
+                    <iterate operator="and" ifEmpty="false">
+                        <test 
+                            property="org.eclipse.core.resources.projectNature" 
+                            value="hu.ngms.opencl.openclnature" />
+                    </iterate>
+                </with>
+            </visibleWhen>
+            <parameter
+                  name="newWizardId"
+                  value="hu.ngms.opencl.projectwizard.kernelWizard">
+            </parameter>
+         </command>
+      </menuContribution>
    </extension>
 </plugin>
