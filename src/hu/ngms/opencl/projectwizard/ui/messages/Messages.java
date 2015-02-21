@@ -22,7 +22,9 @@ public class Messages extends NLS {
     public static String OpenCLMainWizardPage_dirAlreadyExists;
     public static String OpenCLMainWizardPage_noProjectTypes;
     public static String OpenCLMainWizardPage_projectCategorySelected;
-
+    public static String OpenCLMainWizardPage_openClVersion;
+    public static String OpenCLMainWizardPage_toolchains;
+    
     public static String OpenCLConfigWizard_title;
     public static String OpenCLConfigWizard_message;
     public static String OpenCLConfigWizard_comment;
@@ -34,6 +36,7 @@ public class Messages extends NLS {
     public static String OpenCLConfigWizard_advanced;
 
     public static String OpenCLMainWizardPage_error0;
+    public static String OpenCLMainWizardPage_error1;
     
     public static String OpenCLKernelWizard_message;
     public static String OpenCLKernelWizard_title;

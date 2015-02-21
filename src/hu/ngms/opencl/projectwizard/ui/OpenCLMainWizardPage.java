@@ -2,6 +2,7 @@ package hu.ngms.opencl.projectwizard.ui;
 
 import hu.ngms.opencl.projectwizard.Activator;
 import hu.ngms.opencl.projectwizard.ui.messages.Messages;
+import hu.ngms.opencl.projectwizard.util.OpenCLVersion;
 
 import java.net.URI;
 import java.util.ArrayList;
@@ -32,6 +33,12 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IMessageProvider;
+import org.eclipse.jface.viewers.ArrayContentProvider;
+import org.eclipse.jface.viewers.ComboViewer;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.wizard.IWizard;
 import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.osgi.util.TextProcessor;
@@ -44,6 +51,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Tree;
@@ -69,7 +77,8 @@ public class OpenCLMainWizardPage extends WizardNewProjectCreationPage
     private Composite right;
     private Button show_sup;
     private Label right_label;
-
+    private OpenCLVersion selectedOpenCLVersion =  null;
+    
     public CWizardHandler h_selected = null;
     private Label categorySelectedLabel;
 
@@ -105,7 +114,33 @@ public class OpenCLMainWizardPage extends WizardNewProjectCreationPage
 	Composite c = new Composite(parent, SWT.NONE);
 	c.setLayoutData(new GridData(GridData.FILL_BOTH));
 	c.setLayout(new GridLayout(2, true));
-
+	
+	Label version = new Label(c, SWT.NONE);
+	version.setText(Messages.OpenCLMainWizardPage_openClVersion);
+	version.setFont(parent.getFont());
+	version.setLayoutData(new GridData(GridData.BEGINNING));
+	
+	ComboViewer versionCombo = new ComboViewer(c, SWT.NONE);
+	versionCombo.setContentProvider(ArrayContentProvider.getInstance());
+	versionCombo.setLabelProvider(new LabelProvider() {
+	    public String getText(Object element) {
+		if (element instanceof OpenCLVersion) {
+		    return ((OpenCLVersion)element).getStringForCombo();
+		}
+		return super.getText(element);
+	    }
+	});
+	versionCombo.addSelectionChangedListener(new ISelectionChangedListener() {
+	    
+	    @Override
+	    public void selectionChanged(SelectionChangedEvent event) {
+		selectedOpenCLVersion =(OpenCLVersion)((IStructuredSelection)event.getSelection()).getFirstElement();
+		setPageComplete(validatePage());
+	    }
+	});
+	versionCombo.setInput(OpenCLVersion.values());
+	versionCombo.getCombo().setLayoutData(new GridData(GridData.BEGINNING));
+	
 	Label l1 = new Label(c, SWT.NONE);
 	l1.setText(Messages.OpenCLMainWizardPage_projectType); 
 	l1.setFont(parent.getFont());
@@ -188,7 +223,12 @@ public class OpenCLMainWizardPage extends WizardNewProjectCreationPage
 	    setErrorMessage(Messages.OpenCLMainWizardPage_error0); 
 	    return false;
 	}
-
+	
+	if (this.selectedOpenCLVersion == null) {
+	    setErrorMessage(Messages.OpenCLMainWizardPage_error1); 
+	    return false;
+	}
+	
 	boolean bad = true; // should we treat existing project as error
 
 	IProject handle = getProjectHandle();
@@ -423,7 +463,7 @@ public class OpenCLMainWizardPage extends WizardNewProjectCreationPage
 	    }
 	    return;
 	}
-	right_label.setText(h_selected.getHeader());
+	right_label.setText(Messages.OpenCLMainWizardPage_toolchains);
 	if (categorySelectedLabel != null)
 	    categorySelectedLabel.setVisible(false);
 	h_selected.handleSelection();
@@ -457,6 +497,10 @@ public class OpenCLMainWizardPage extends WizardNewProjectCreationPage
     @SuppressWarnings("unchecked")
     public List filterItems(List items) {
 	return items;
+    }
+    
+    public OpenCLVersion getSelectedOpenCLVersion() {
+	return selectedOpenCLVersion;
     }
 
 }

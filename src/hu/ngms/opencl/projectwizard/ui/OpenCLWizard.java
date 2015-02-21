@@ -3,6 +3,7 @@ package hu.ngms.opencl.projectwizard.ui;
 import hu.ngms.opencl.projectwizard.OpenCLProjectNature;
 import hu.ngms.opencl.projectwizard.ui.messages.Messages;
 import hu.ngms.opencl.projectwizard.util.OpenCLProjectHelper;
+import hu.ngms.opencl.projectwizard.util.OpenCLVersion;
 
 import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
@@ -32,6 +33,7 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.IWorkspaceRunnable;
+import org.eclipse.core.resources.ProjectScope;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
@@ -42,11 +44,15 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.core.runtime.content.IContentType;
 import org.eclipse.core.runtime.content.IContentTypeManager;
+import org.eclipse.core.runtime.preferences.IEclipsePreferences;
+import org.eclipse.core.runtime.preferences.IScopeContext;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.ui.actions.WorkspaceModifyDelegatingOperation;
+import org.eclipse.ui.ide.IDE.Preferences;
 import org.eclipse.ui.wizards.newresource.BasicNewProjectResourceWizard;
 import org.eclipse.ui.wizards.newresource.BasicNewResourceWizard;
+import org.osgi.service.prefs.BackingStoreException;
 
 public class OpenCLWizard extends BasicNewResourceWizard implements
 	IExecutableExtension, IWizardWithMemory, ICDTCommonProjectWizard {
@@ -91,10 +97,19 @@ public class OpenCLWizard extends BasicNewResourceWizard implements
 	    description.setNatureIds(newNatures);
 	    prj.setDescription(description, null);
 	    
+	    //Setting OpenCL version for project
+	    IScopeContext context = new ProjectScope(prj);
+	    IEclipsePreferences projectPreferences = context.getNode(OpenCLProjectNature.OPENCL_NATURE_ID);
+	    projectPreferences.put(OpenCLVersion.preferencesKey, fMainPage.getSelectedOpenCLVersion().toString());
+	    projectPreferences.flush();
+
 	    OpenCLProjectHelper.addFoldersToProjectStructure(prj);
+	    
 	} catch (CoreException e) {
 	    e.printStackTrace();
-	} finally {
+	} catch (BackingStoreException e) { 
+	    e.printStackTrace();
+    	} finally {
 	    continueCreationMonitor.done();
 	}
 	return prj;
