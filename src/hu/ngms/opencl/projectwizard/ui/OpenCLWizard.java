@@ -89,7 +89,7 @@ public class OpenCLWizard extends BasicNewResourceWizard implements
 	setForcePreviousAndNextButtons(true);
 
     }
-    
+
     protected IProject continueCreation(IProject prj) {
 	if (continueCreationMonitor == null) {
 	    continueCreationMonitor = new NullProgressMonitor();
@@ -102,20 +102,22 @@ public class OpenCLWizard extends BasicNewResourceWizard implements
 	    newNatures[natures.length] = OpenCLProjectNature.OPENCL_NATURE_ID;
 	    description.setNatureIds(newNatures);
 	    prj.setDescription(description, null);
-	    
-	    //Setting OpenCL version for project
+
+	    // Setting OpenCL version for project
 	    IScopeContext context = new ProjectScope(prj);
-	    IEclipsePreferences projectPreferences = context.getNode(OpenCLProjectNature.OPENCL_NATURE_ID);
-	    projectPreferences.put(OpenCLVersion.preferencesKey, fMainPage.getSelectedOpenCLVersion().toString());
+	    IEclipsePreferences projectPreferences = context
+		    .getNode(OpenCLProjectNature.OPENCL_NATURE_ID);
+	    projectPreferences.put(OpenCLVersion.preferencesKey, fMainPage
+		    .getSelectedOpenCLVersion().toString());
 	    projectPreferences.flush();
 
 	    OpenCLProjectHelper.addFoldersToProjectStructure(prj);
-	    
+
 	} catch (CoreException e) {
 	    e.printStackTrace();
-	} catch (BackingStoreException e) { 
+	} catch (BackingStoreException e) {
 	    e.printStackTrace();
-    	} finally {
+	} finally {
 	    continueCreationMonitor.done();
 	}
 	return prj;
@@ -243,31 +245,40 @@ public class OpenCLWizard extends BasicNewResourceWizard implements
 	}
 	BasicNewProjectResourceWizard.updatePerspective(fConfigElement);
 	selectAndReveal(newProject);
-	
-	//Enabling OpenCL language settings provider
-	ICProjectDescriptionManager manager = CoreModel.getDefault().getProjectDescriptionManager();
-        ICProjectDescription prjDescriptionWritable = manager.getProjectDescription(newProject, true);
-        ICConfigurationDescription cfgDescriptionWritable = prjDescriptionWritable.getActiveConfiguration();
 
-        
-        String[] providersId = ((ILanguageSettingsProvidersKeeper) cfgDescriptionWritable).getDefaultLanguageSettingsProvidersIds();
-        String[] newProvidersIds = new String[providersId.length + 1];
-        int i = 0;
-        for (String provider : providersId) {
-    	newProvidersIds[i] = provider;
-    	i++;
-        }
-        newProvidersIds[i] = "hu.ngms.opencl.editor.settings_provider";
-        
-        ((ILanguageSettingsProvidersKeeper) cfgDescriptionWritable).setDefaultLanguageSettingsProvidersIds(newProvidersIds);               
-        List<ILanguageSettingsProvider> providers = LanguageSettingsManager.createLanguageSettingsProviders(newProvidersIds);
-        ((ILanguageSettingsProvidersKeeper) cfgDescriptionWritable).setLanguageSettingProviders(providers);
-        try {
+	// Enabling OpenCL language settings provider
+	ICProjectDescriptionManager manager = CoreModel.getDefault()
+		.getProjectDescriptionManager();
+	ICProjectDescription prjDescriptionWritable = manager
+		.getProjectDescription(newProject, true);
+	ICConfigurationDescription[] cfgDescriptionWritable = prjDescriptionWritable
+		.getConfigurations();
+
+	for (ICConfigurationDescription configDescriptionWritable : cfgDescriptionWritable) {
+
+	    String[] providersId = ((ILanguageSettingsProvidersKeeper) configDescriptionWritable)
+		    .getDefaultLanguageSettingsProvidersIds();
+	    String[] newProvidersIds = new String[providersId.length + 1];
+	    int i = 0;
+	    for (String provider : providersId) {
+		newProvidersIds[i] = provider;
+		i++;
+	    }
+	    newProvidersIds[i] = "hu.ngms.opencl.editor.settings_provider";
+
+	    ((ILanguageSettingsProvidersKeeper) configDescriptionWritable)
+		    .setDefaultLanguageSettingsProvidersIds(newProvidersIds);
+	    List<ILanguageSettingsProvider> providers = LanguageSettingsManager
+		    .createLanguageSettingsProviders(newProvidersIds);
+	    ((ILanguageSettingsProvidersKeeper) configDescriptionWritable)
+		    .setLanguageSettingProviders(providers);
+	}
+	try {
 	    manager.setProjectDescription(newProject, prjDescriptionWritable);
 	} catch (CoreException e) {
 	    return false;
 	}
-        return true;
+	return true;
     }
 
     protected boolean setCreated() throws CoreException {
