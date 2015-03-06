@@ -14,11 +14,16 @@ import java.util.List;
 import org.eclipse.cdt.core.CCProjectNature;
 import org.eclipse.cdt.core.CCorePlugin;
 import org.eclipse.cdt.core.CProjectNature;
+import org.eclipse.cdt.core.language.settings.providers.ILanguageSettingsProvider;
+import org.eclipse.cdt.core.language.settings.providers.ILanguageSettingsProvidersKeeper;
+import org.eclipse.cdt.core.language.settings.providers.LanguageSettingsManager;
 import org.eclipse.cdt.core.model.CoreModel;
 import org.eclipse.cdt.core.model.ILanguage;
 import org.eclipse.cdt.core.model.LanguageManager;
+import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 import org.eclipse.cdt.core.settings.model.ICProjectDescriptionManager;
+import org.eclipse.cdt.internal.core.LocalProjectScope;
 import org.eclipse.cdt.internal.ui.wizards.ICDTCommonProjectWizard;
 import org.eclipse.cdt.ui.CUIPlugin;
 import org.eclipse.cdt.ui.wizards.CWizardHandler;
@@ -46,6 +51,7 @@ import org.eclipse.core.runtime.content.IContentType;
 import org.eclipse.core.runtime.content.IContentTypeManager;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.IScopeContext;
+import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.ui.actions.WorkspaceModifyDelegatingOperation;
@@ -83,7 +89,7 @@ public class OpenCLWizard extends BasicNewResourceWizard implements
 	setForcePreviousAndNextButtons(true);
 
     }
-
+    
     protected IProject continueCreation(IProject prj) {
 	if (continueCreationMonitor == null) {
 	    continueCreationMonitor = new NullProgressMonitor();
@@ -237,7 +243,31 @@ public class OpenCLWizard extends BasicNewResourceWizard implements
 	}
 	BasicNewProjectResourceWizard.updatePerspective(fConfigElement);
 	selectAndReveal(newProject);
-	return true;
+	
+	//Enabling OpenCL language settings provider
+	ICProjectDescriptionManager manager = CoreModel.getDefault().getProjectDescriptionManager();
+        ICProjectDescription prjDescriptionWritable = manager.getProjectDescription(newProject, true);
+        ICConfigurationDescription cfgDescriptionWritable = prjDescriptionWritable.getActiveConfiguration();
+
+        
+        String[] providersId = ((ILanguageSettingsProvidersKeeper) cfgDescriptionWritable).getDefaultLanguageSettingsProvidersIds();
+        String[] newProvidersIds = new String[providersId.length + 1];
+        int i = 0;
+        for (String provider : providersId) {
+    	newProvidersIds[i] = provider;
+    	i++;
+        }
+        newProvidersIds[i] = "hu.ngms.opencl.editor.settings_provider";
+        
+        ((ILanguageSettingsProvidersKeeper) cfgDescriptionWritable).setDefaultLanguageSettingsProvidersIds(newProvidersIds);               
+        List<ILanguageSettingsProvider> providers = LanguageSettingsManager.createLanguageSettingsProviders(newProvidersIds);
+        ((ILanguageSettingsProvidersKeeper) cfgDescriptionWritable).setLanguageSettingProviders(providers);
+        try {
+	    manager.setProjectDescription(newProject, prjDescriptionWritable);
+	} catch (CoreException e) {
+	    return false;
+	}
+        return true;
     }
 
     protected boolean setCreated() throws CoreException {

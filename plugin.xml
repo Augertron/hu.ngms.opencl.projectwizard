@@ -75,8 +75,8 @@
    <extension
          point="org.eclipse.cdt.managedbuilder.core.buildDefinitions">
       <configuration
-            id="hu.ngms.opencl.projectwizard.configuration1"
-            languageSettingsProviders="hu.ngms.opencl.editor.OpenCLLanguageSettingsProvider">
+            id="hu.ngms.opencl.projectwizard.configuration"
+            languageSettingsProviders="hu.ngms.opencl.editor.settings_provider">
       </configuration>
    </extension>
 </plugin>
